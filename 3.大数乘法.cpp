@@ -205,5 +205,107 @@ int main(){
     return 0;
 }
 
+/*********************************
+*   日期：2015-01-29
+*   作者：SJF0115
+*   题目: Karatsuba快速相乘算法
+*   博客：
+**********************************/
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+// given two unequal sized bit strings, converts them to
+// same length by adding leading 0s in the smaller string. Returns the
+// the new length
+int MakeSameLen(string& num1,string& num2){
+    int len1 = num1.length();
+    int len2 = num2.length();
+    if(len1 < len2){
+        for(int i = 0;i < len2 - len1;++i){
+            num1 = "0" + num1;
+        }//for
+        return len2;
+    }//if
+    else{
+        for(int i = 0;i < len1 - len2;++i){
+            num2 = "0" + num2;
+        }//for
+        return len1;
+    }//else
+}
+
+// big number add function
+string AddString(string num1,string num2){
+    int len1 = num1.length();
+    int len2 = num2.length();
+    // 容错处理
+    if(len1 <= 0){
+        return num2;
+    }//if
+    if(len2 <= 0){
+        return num1;
+    }
+    string result;
+    int i = len1-1,j = len2-1;
+    int a,b,sum,carry = 0;
+    // 倒序相加
+    while(i >= 0 || j >= 0 || carry > 0){
+        a = i >= 0 ? num1[i] - '0' : 0;
+        b = j >= 0 ? num2[j] - '0' : 0;
+        // 按位相加并加上进位
+        sum = a + b + carry;
+        // 进位
+        carry = sum / 10;
+        result.insert(result.begin(),sum % 10 + '0');
+        --i;
+        --j;
+    }//while
+    return result;
+}
+// 移位
+long int Shift(int len){
+    int num = 1;
+    for(int i = 0;i < len;++i){
+        num *= 10;
+    }//for
+    return num;
+}
+
+
+long int KaratsubaMultiply(string num1, string num2) {
+    int len = MakeSameLen(num1,num2);
+    if(len == 0){
+        return 0;
+    }//if
+    // all digit are one
+    if(len == 1){
+        return (num1[0] - '0')*(num2[0] - '0');
+    }//if
+    int mid = len / 2;
+    // Find the first half and second half of first string.
+    string x1 = num1.substr(0,mid);
+    string x0 = num1.substr(mid,len - mid);
+    // Find the first half and second half of second string
+    string y1 = num2.substr(0,mid);
+    string y0 = num2.substr(mid,len - mid);
+
+    long int z0 = KaratsubaMultiply(x0,y0);
+    long int z1 = KaratsubaMultiply(AddString(x1,x0),AddString(y1,y0));
+    long int z2 = KaratsubaMultiply(x1,y1);
+    // Recursively computer
+    return (z2 * Shift(2*(len - mid)) + ((z1 - z2 - z0) * Shift(len - mid))) + z0;
+}
+
+
+int main(){
+    string num1("12345");
+    string num2("6789");
+    long int result = KaratsubaMultiply(num1,num2);
+    // 输出
+    cout<<result<<endl;
+    return 0;
+}
 
 
