@@ -155,4 +155,62 @@ TreeNode *LCA(TreeNode *root,TreeNode *u,TreeNode *v){
     return nullptr;
 }
 
+/*
+思路四：
+前面我们提过如果结点中有一个指向父结点的指针，我们可以把问题转化为求两个链表的共同结点。
+现在我们可以想办法得到这个链表。我们在本面试题系列的第4题中分析过如何得到一条中根结点开始的路径。
+我们在这里稍作变化即可：
+*/
+/**--------------------------------
+*   日期：2015-02-02
+*   作者：SJF0115
+*   题目: 从根节点到目标节点的路径
+------------------------------------**/
+bool NodePath (TreeNode* root,TreeNode* node,vector<TreeNode*> &path) {
+    if(root == node) {
+        return true;
+    }//if
+    path.push_back(root);
+    bool isExits = false;
+    // left sub tree
+    if(root->left) {
+        isExits = NodePath(root->left,node,path);
+    }//if
+    if(!isExits && root->right) {
+        isExits = NodePath(root->right,node,path);
+    }//if
+    if(!isExits) {
+        path.pop_back();
+    }//if
+    return isExits;
+}
+//由于这个路径是从跟结点开始的。最低的共同父结点就是路径中的最后一个共同结点：
+/**--------------------------------
+*   日期：2015-02-02
+*   作者：SJF0115
+*   题目: 最近公共祖先(LCA)链表法
+*   博客：
+------------------------------------**/
+TreeNode *LCA(TreeNode *root,TreeNode *u,TreeNode *v){
+    vector<TreeNode*> path1,path2;
+    // 根节点到u的路径
+    bool isFound1 = NodePath(root,u,path1);
+    // 根节点到v的路径
+    bool isFound2 = NodePath(root,v,path2);
+    if(!isFound1 || !isFound2){
+        return nullptr;
+    }//if
+    int size1 = path1.size();
+    int size2 = path2.size();
+    TreeNode *node = nullptr;
+    for(int i = 0,j = 0;i < size1 && j < size2;++i,++j){
+        if(path1[i] == path2[j]){
+            node = path1[i];
+        }//if
+    }//for
+    return node;
+}
+
+//这种思路的时间复杂度是O(n)，时间效率要比第一种方法好很多。但同时我们也要注意到，这种思路需要两个链表来保存路径，空间效率比不上第一个方法。
+
 
