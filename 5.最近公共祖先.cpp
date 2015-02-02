@@ -34,3 +34,51 @@ TreeNode *LCA(TreeNode *root,TreeNode *u,TreeNode *v){
     }//if
     return nullptr;
 }
+
+
+/*
+思路二：
+迭代版
+*/
+/**--------------------------------
+*   日期：2015-02-02
+*   作者：SJF0115
+*   题目: 最近公共祖先(LCA)迭代版
+*   博客：
+------------------------------------**/
+TreeNode *LCA(TreeNode *root,TreeNode *u,TreeNode *v){
+    // 空树
+    if (root == nullptr || u == nullptr || v == nullptr) {
+        return nullptr;
+    }//if
+    TreeNode *leftNode = u;
+    TreeNode *rightNode = v;
+    TreeNode *parentNode = nullptr;
+    //二叉查找树内，如果左结点大于右结点，不对，交换
+    if (leftNode->val > rightNode->val) {
+        TreeNode *tmp = leftNode;
+        leftNode = rightNode;
+        rightNode = tmp;
+    }//if
+    while(root){
+         // u < t < v  or v < t < u   在root两侧
+        if(leftNode->val < root->val && root->val < rightNode->val){
+            return root;
+        }//if
+        // u < root v < root left sub tree
+        if(rightNode->val < root->val){
+            parentNode = root;
+            root = root->left;
+        }//if
+        // u > root v > root right sub tree
+        else if(leftNode->val > root->val){
+            parentNode = root;
+            root = root->right;
+        }
+        // u是v祖先 or v是u的祖先
+        else if(root == leftNode || root == rightNode){
+            return parentNode;
+        }
+    }//while
+    return nullptr;
+}
