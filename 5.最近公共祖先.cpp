@@ -82,3 +82,77 @@ TreeNode *LCA(TreeNode *root,TreeNode *u,TreeNode *v){
     }//while
     return nullptr;
 }
+
+
+/*
+思路三：
+所谓共同的父结点，就是两个结点都出现在这个结点的子树中。因此我们可以定义一函数，来判断一个结点的子树中是不是包含了另外一个结点。
+这不是件很难的事，我们可以用递归的方法来实现：
+*/
+// root树中是否包含节点node
+bool Exits(TreeNode *root,TreeNode *node){
+    // find the node
+    if(root == node){
+        return true;
+    }//if
+    // left sub tree
+    bool isExits = false;
+    if(root->left){
+        isExits = Exits(root->left,node);
+    }//if
+    // right sub tree
+    if(!isExits && root->right){
+        isExits = Exits(root->right,node);
+    }//if
+    return isExits;
+}
+/*
+我们可以从根结点开始，判断以当前结点为根的树中左右子树是不是包含我们要找的两个结点。
+如果两个结点都出现在它的左子树中，那最低的共同父结点也出现在它的左子树中。
+如果两个结点都出现在它的右子树中，那最低的共同父结点也出现在它的右子树中。
+如果两个结点一个出现在左子树中，一个出现在右子树中，那当前的结点就是最低的共同父结点。
+*/
+// 最近公共祖先
+TreeNode *LCA(TreeNode *root,TreeNode *u,TreeNode *v){
+    // 空树
+    if(root == nullptr || u == nullptr || v == nullptr){
+        return nullptr;
+    }//if
+    // check whether left child has u and v
+    bool leftHasNode1 = false;
+    bool leftHasNode2 = false;
+    if(root->left){
+        leftHasNode1 = Exits(root->left,u);
+        leftHasNode2 = Exits(root->left,v);
+    }//if
+    if(leftHasNode1 && leftHasNode2){
+        if(root->left == u || root->left == v){
+            return root;
+        }//if
+        return LCA(root->left,u,v);
+    }//if
+    // check whether right child has u and v
+    bool rightHasNode1 = false;
+    bool rightHasNode2 = false;
+    if(root->right){
+        if(!leftHasNode1){
+            rightHasNode1 = Exits(root->right,u);
+        }//if
+        if(!leftHasNode2){
+            rightHasNode2 = Exits(root->right,v);
+        }//if
+    }//if
+    if(rightHasNode1 && rightHasNode2){
+        if(root->right == u || root->right == v){
+            return root;
+        }//if
+        return LCA(root->right,u,v);
+    }//if
+    // both left and right child has
+    if((leftHasNode1 && rightHasNode2) || (leftHasNode2 && rightHasNode1)){
+        return root;
+    }//if
+    return nullptr;
+}
+
+
