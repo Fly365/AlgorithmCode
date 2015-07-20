@@ -48,3 +48,24 @@ int main(){
     }//for
     return 0;
 }
+
+// 递归实现
+class Solution {
+public:
+    vector<int> printListFromTailToHead(ListNode* head) {
+        vector<int> result;
+        // 递归实现
+        helper(head,result);
+        return result;
+    }
+private:
+    void helper(ListNode* head,vector<int> &result){
+        if(head){
+            if(head->next){
+                helper(head->next,result);
+            }//if
+            result.push_back(head->val);
+        }//if
+    }
+};
+
