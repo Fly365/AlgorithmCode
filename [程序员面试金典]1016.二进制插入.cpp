@@ -27,6 +27,15 @@ public:
     }
 };
 
+
+class BinInsert {
+public:
+    int binInsert(int n, int m, int j, int i) {
+        // write code here
+        return n+(m<<j);
+    }
+};
+
 int main() {
     BinInsert s;
     int n = 1024,m = 19,j = 2,i = 6;
